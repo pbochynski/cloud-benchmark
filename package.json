@@ -1,0 +1,26 @@
+{
+  "name": "cloud-benchmark",
+  "version": "0.0.1",
+  "description": "Cloud application performance",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pbochynski/cloud-benchmark.git"
+  },
+  "author": "pbochynski",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "k6": "^0.0.0",
+    "node-worker-threads-pool": "^1.5.1",
+    "redis": "^4.6.5"
+  },
+  "bugs": {
+    "url": "https://github.com/pbochynski/cloud-benchmark/issues"
+  },
+  "homepage": "https://github.com/pbochynski/cloud-benchmark#readme"
+}
