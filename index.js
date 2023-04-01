@@ -98,3 +98,9 @@ const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
 });
+
+// Trap CTRL-C
+process.on('SIGINT', function (code) {
+  console.log('SIGINT received');
+  process.exit();
+});
