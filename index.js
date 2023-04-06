@@ -1,4 +1,5 @@
 const { StaticPool } = require('node-worker-threads-pool');
+const axios = require('axios');
 
 const primeCalculator = new StaticPool({
   size: 16,
@@ -61,9 +62,19 @@ app.get('/prime/:n', async (req, res) => {
   res.send({ n: req.params["n"], prime: result, msTime: t2 - t1 });
 });
 
-app.get('/recursive/:n', (req, res) => {
+app.get('/recursive/:n', async (req, res) => {
   const t1 = Date.now()
-  const result = fibRecursive(req.params["n"]);
+  let n = req.params["n"]
+  let url = req.query.url
+  if (!url) {
+    url = req.protocol + '://' + req.get('host')
+  }
+  let result = 1
+  if (n>2) {
+    let f1 = await axios.get(url+`/recursive/${n-1}`,{params:{url}})
+    let f2 = await axios.get(url+`/recursive/${n-2}`,{params:{url}})
+    result = f1.data.fibonacci+f2.data.fibonacci
+  }
   const t2 = Date.now()
   res.send({ n: req.params["n"], fibonacci: result, msTime: t2 - t1 });
 });
