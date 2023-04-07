@@ -2,7 +2,7 @@ const { StaticPool } = require('node-worker-threads-pool');
 const axios = require('axios');
 
 const primeCalculator = new StaticPool({
-  size: 16,
+  size: 4,
   task: prime
 });
 
@@ -19,15 +19,11 @@ function prime(n) {
       }
     }
     return true
-  }
-  
+  }  
   let i=parseInt(n)
-  console.log("Calculate prime number >=", n)
   while (!isPrime(i)) {
-    console.log(i, "is not prime")
     ++i
   }
-  console.log(i, "is prime")
   return i
 }
 
@@ -57,9 +53,16 @@ app.get('/cpu/:n', (req, res) => {
 
 app.get('/prime/:n', async (req, res) => {
   const t1 = Date.now()
-  const result = await primeCalculator.exec(req.params["n"])
+  let parallel = req.query.parallel
+  const n = req.params["n"]
+  let result
+  if (parallel) {
+    result = await primeCalculator.exec(n)
+  } else {
+    result = prime(n)
+  }
   const t2 = Date.now()
-  res.send({ n: req.params["n"], prime: result, msTime: t2 - t1 });
+  res.send({ n: req.params["n"], prime: result, parallel: parallel ? true:false, msTime: t2 - t1 });
 });
 
 app.get('/recursive/:n', async (req, res) => {
