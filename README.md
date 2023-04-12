@@ -30,11 +30,11 @@ Sample execution times in milliseconds for different platforms:
 
 | Sequence number | n1-standard machines (Cloud Foundry on GCP) | n2-standard machines (Kubernetes on GCP)  | 2,3 GHz 8-Core Intel Core i9 (MacBook Pro) |
 |---|---|---|---|
-| 10 | 2333 | 1178 | 1526 |
-| 12 | 6947 | 3111 | 4031 |
-| 14 | 15074 |  8150 | 11080 |
+| 10 | 2333 | 1178 | 100 |
+| 12 | 6947 | 3111 | 240 |
+| 14 | 15074 |  8150 | 522 |
 
-The latency is calculated on the server side, to not influence the results with the distance between the client and the application.
+The latency is calculated on the server side, to not influence the results with the distance between the client and the application. 
 
 # Run with docker
 
