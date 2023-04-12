@@ -1,15 +1,19 @@
-const { StaticPool } = require('node-worker-threads-pool');
 const axios = require('axios');
-
-const primeCalculator = new StaticPool({
-  size: 4,
-  task: prime
-});
-
 const express = require('express');
+
 const app = express();
-const { createClient } = require('redis');
-const client = createClient();
+const homePage = `<html>
+<body>
+  <h1>Cloud Benchmark</h1>
+  The simple application to verify CPU speed and network latency of your application runtime.
+  <ul>
+    <li><a href="/prime/2000000000">/prime/2000000000</a> - calculates the first prime number greater than 2000000000 (you can change the number)</li>
+    <li><a href="/recursive/12">/recursive/12</a> - calculates the fibonacci sequence with recursive inefficient algorithm</li>
+  </ul>
+
+  
+</body>
+</html>`
 
 function prime(n) {
   function isPrime(n) {
@@ -27,11 +31,6 @@ function prime(n) {
   return i
 }
 
-function fibRecursive(num) {
-  if (num == 1) return 1;
-  if (num == 0) return 0;
-  return fibRecursive(num - 1) + fibRecursive(num - 2);
-}
 function fibIterative(n) {
   const sequence = [0, 1];
   for (i = 2; i <= n; i++) {
@@ -40,11 +39,7 @@ function fibIterative(n) {
   return sequence[n];
 }
 
-
-var requestsInFlight = 0
-var allocated = []
-// CPU-intensive endpoint
-app.get('/cpu/:n', (req, res) => {
+app.get('/fibonacci/:n', (req, res) => {
   const t1 = Date.now()
   const result = fibIterative(req.params["n"]);
   const t2 = Date.now()
@@ -53,16 +48,10 @@ app.get('/cpu/:n', (req, res) => {
 
 app.get('/prime/:n', async (req, res) => {
   const t1 = Date.now()
-  let parallel = req.query.parallel
   const n = req.params["n"]
-  let result
-  if (parallel) {
-    result = await primeCalculator.exec(n)
-  } else {
-    result = prime(n)
-  }
+  let result = prime(n)
   const t2 = Date.now()
-  res.send({ n: req.params["n"], prime: result, parallel: parallel ? true:false, msTime: t2 - t1 });
+  res.send({ n: req.params["n"], prime: result , msTime: t2 - t1 });
 });
 
 app.get('/recursive/:n', async (req, res) => {
@@ -82,30 +71,9 @@ app.get('/recursive/:n', async (req, res) => {
   res.send({ n: req.params["n"], fibonacci: result, msTime: t2 - t1 });
 });
 
-app.get('/key/:key', async (req, res) => {
-  if (!client.isReady) {
-    await client.connect();
-  }
-  let n = await client.incr(req.params["key"])
-  res.send({ key: req.params["key"], value: n });
-});
 
-// Memory-intensive endpoint
-app.get('/memory', async (req, res) => {
-
-  const size = 1024 * 1024 * 10;
-  const array = []
-  for (let i = 0; i < size; ++i)
-    array.push(i)
-  allocated[requestsInFlight % 20] = array
-  console.log(process.memoryUsage());
-  res.send(`Allocated ${size} MB of memory`);
-  requestsInFlight++;
-});
-
-// Hello World endpoint
 app.get('/', (req, res) => {
-  res.send('Hello World!');
+  res.send(homePage);
 });
 
 const port = process.env.PORT || 3000;
