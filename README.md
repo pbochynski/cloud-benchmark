@@ -28,11 +28,11 @@ The latency benchmark uses a very ineffective algorithm for Fibonacci sequence t
 
 Sample execution times in milliseconds for different platforms:
 
-| Sequence number | n1-standard machines (Cloud Foundry on GCP) | n2-standard machines (Kubernetes on GCP)  | 2,3 GHz 8-Core Intel Core i9 (MacBook Pro) |
-|---|---|---|---|
-| 10 | 2333 | 1178 | 100 |
-| 12 | 6947 | 3111 | 240 |
-| 14 | 15074 |  8150 | 522 |
+| Sequence number | Cloud Foundry | K8S (ingress gateway)  | K8S (cluster local) | Docker (localhost) |
+|---|---|---|---|---|
+| 10 | 2333 | 1178 | 217 | 100 |
+| 12 | 6947 | 3111 | 607 | 240 |
+| 14 | 15074 |  8150 | 1657 | 522 |
 
 The latency is calculated on the server side, to not influence the results with the distance between the client and the application. 
 
