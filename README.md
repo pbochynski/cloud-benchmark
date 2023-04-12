@@ -38,45 +38,20 @@ Sample execution times in milliseconds for different platforms:
 # Run with docker
 
 ```
-docker run -p 3000:3000 ghcr.io/pbochynski/cloud-benchmark:0.0.4
+docker run -p 3000:3000 ghcr.io/pbochynski/cloud-benchmark:0.0.5
 ```
 
 ## Cloud Foundry deployment 
 
-`cf push bench --docker-image pbochynski/cloud-benchmark:0.0.4`
+`cf push bench --docker-image pbochynski/cloud-benchmark:0.0.5`
 
 
 ## Kubernetes (Kyma) deployment
 
-```
-kubectl create deployment bench --image ghcr.io/pbochynski/cloud-benchmark:0.0.4
-kubectl create service clusterip bench --tcp=3000:3000
-```
+Create a test namespace with Istio sidecar injection enabled, and deploy the cloud-benchmark application:
 
-Expose the service with the external URL:
 ```
-cat <<EOF |kubectl apply -f -
-apiVersion: gateway.kyma-project.io/v1beta1
-kind: APIRule
-metadata:
-  name: bench
-  labels:
-    app.kubernetes.io/name: bench
-  annotations: {}
-  namespace: default
-spec:
-  gateway: kyma-gateway.kyma-system.svc.cluster.local
-  rules:
-    - path: /.*
-      methods:
-        - GET
-      accessStrategies:
-        - handler: allow
-  host: bench
-  service:
-    name: bench
-    port: 3000
-EOF
+kubectl create ns test
+kubectl label ns test istio-injection=enabled
+kubectl apply -f https://raw.githubusercontent.com/pbochynski/cloud-benchmark/main/cloud-benchmark-k8s.yaml
 ```
-
-
