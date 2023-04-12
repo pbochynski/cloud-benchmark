@@ -43,7 +43,9 @@ docker run -p 3000:3000 ghcr.io/pbochynski/cloud-benchmark:0.0.5
 
 ## Cloud Foundry deployment 
 
-`cf push bench --docker-image pbochynski/cloud-benchmark:0.0.5`
+```
+cf push bench --docker-image pbochynski/cloud-benchmark:0.0.5
+```
 
 
 ## Kubernetes (Kyma) deployment
