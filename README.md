@@ -20,7 +20,7 @@ Sample execution times in milliseconds for different platforms:
 
 The sample values are the best results out of 10 subsequent tries (minimum)
 
-## Latency/throughput benchmark
+## Latency benchmark
 
 `GET /recursive/{n}?url={baseUrl}` - calculates the n-th number in the Fibonacci sequence. Sample result: `{"n":"3000000000","prime":3000000019,"msTime":11784}`
 
