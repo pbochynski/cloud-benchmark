@@ -55,5 +55,5 @@ Create a test namespace with Istio sidecar injection enabled, and deploy the clo
 ```
 kubectl create ns test
 kubectl label ns test istio-injection=enabled
-kubectl apply -f https://raw.githubusercontent.com/pbochynski/cloud-benchmark/main/cloud-benchmark-k8s.yaml
+kubectl apply -n test -f https://raw.githubusercontent.com/pbochynski/cloud-benchmark/main/cloud-benchmark-k8s.yaml
 ```
