@@ -4,8 +4,33 @@ The `cloud-benchmark` is a test application for checking the cloud offering perf
 - CPU speed
 - network latency
 
+# Quick start
 
-## CPU benchmark
+## Run locally with docker
+```
+docker run -p 3000:3000 ghcr.io/pbochynski/cloud-benchmark:0.0.5
+```
+
+## Deploy to Cloud Foundry
+
+```
+cf push bench --docker-image pbochynski/cloud-benchmark:0.0.5
+```
+
+
+## Deploy to Kubernetes (Kyma)
+
+Create a test namespace with Istio sidecar injection enabled, and deploy the cloud-benchmark application:
+
+```
+kubectl create ns test
+kubectl label ns test istio-injection=enabled
+kubectl apply -n test -f https://raw.githubusercontent.com/pbochynski/cloud-benchmark/main/cloud-benchmark-k8s.yaml
+```
+
+# Benchmarks
+
+## CPU
 
 `GET /prime/{n}` - calculates the smallest prime number bigger or equal to n. Sample result: `{"n":"24", "prime":29, "msTime":1}`
 
@@ -20,7 +45,7 @@ Sample execution times in milliseconds for different platforms:
 
 The sample values are the best results out of 10 subsequent tries (minimum)
 
-## Latency benchmark
+## Latency
 
 `GET /recursive/{n}?url={baseUrl}` - calculates the n-th number in the Fibonacci sequence. Sample result: `{"n":"3000000000","prime":3000000019,"msTime":11784}`
 
@@ -35,26 +60,3 @@ Sample execution times in milliseconds for different platforms:
 | 14 | 15074 |  8150 | 1657 | 522 |
 
 The latency is calculated on the server side, to not influence the results with the distance between the client and the application. 
-
-# Run with docker
-
-```
-docker run -p 3000:3000 ghcr.io/pbochynski/cloud-benchmark:0.0.5
-```
-
-## Cloud Foundry deployment 
-
-```
-cf push bench --docker-image pbochynski/cloud-benchmark:0.0.5
-```
-
-
-## Kubernetes (Kyma) deployment
-
-Create a test namespace with Istio sidecar injection enabled, and deploy the cloud-benchmark application:
-
-```
-kubectl create ns test
-kubectl label ns test istio-injection=enabled
-kubectl apply -n test -f https://raw.githubusercontent.com/pbochynski/cloud-benchmark/main/cloud-benchmark-k8s.yaml
-```
