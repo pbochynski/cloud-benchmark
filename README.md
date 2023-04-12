@@ -32,8 +32,9 @@ Sample execution times in milliseconds for different platforms:
 |---|---|---|---|
 | 10 | 2333 | 1178 | 1526 |
 | 12 | 6947 | 3111 | 4031 |
-| 14 | 17282 |  8150 | 11080 |
+| 14 | 15074 |  8150 | 11080 |
 
+The latency is calculated on the server side, to not influence the results with the distance between the client and the application.
 
 # Run with docker
 
