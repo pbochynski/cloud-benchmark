@@ -1,0 +1,100 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: rook-cephfs
+# Change "rook-ceph" provisioner prefix to match the operator namespace if needed
+provisioner: rook-ceph.cephfs.csi.ceph.com
+parameters:
+  # clusterID is the namespace where the rook cluster is running
+  # If you change this namespace, also change the namespace below where the secret namespaces are defined
+  clusterID: rook-ceph
+
+  # CephFS filesystem name into which the volume shall be created
+  fsName: myfs
+
+  # Ceph pool into which the volume shall be created
+  # Required for provisionVolume: "true"
+  pool: myfs-replicated
+
+  # The secrets contain Ceph admin credentials. These are generated automatically by the operator
+  # in the same namespace as the cluster.
+  csi.storage.k8s.io/provisioner-secret-name: rook-csi-cephfs-provisioner
+  csi.storage.k8s.io/provisioner-secret-namespace: rook-ceph
+  csi.storage.k8s.io/controller-expand-secret-name: rook-csi-cephfs-provisioner
+  csi.storage.k8s.io/controller-expand-secret-namespace: rook-ceph
+  csi.storage.k8s.io/node-stage-secret-name: rook-csi-cephfs-node
+  csi.storage.k8s.io/node-stage-secret-namespace: rook-ceph
+
+reclaimPolicy: Delete
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: bench
+  labels:
+    app: bench
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: bench
+  template:
+    metadata:
+      labels:
+        app: bench
+    spec:
+      containers:
+      - name: cloud-benchmark
+        image: ghcr.io/pbochynski/cloud-benchmark:main
+        resources:
+          limits:
+            memory: 400M
+          requests:
+            cpu: 1000m
+            memory: 200M
+        env:
+        - name: DATA_FOLDER
+          value: /data/shared
+        volumeMounts:
+        - name: shared-fs
+          mountPath: /data/shared
+      volumes:
+      - name: shared-fs
+        persistentVolumeClaim:
+          claimName: cephfs-pvc
+          readOnly: false
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: bench
+  labels:
+    app: bench
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
+  selector:
+    app: bench
+  type: ClusterIP
+---
+apiVersion: gateway.kyma-project.io/v1beta1
+kind: APIRule
+metadata:
+  name: bench
+  labels:
+    app.kubernetes.io/name: bench
+spec:
+  gateway: kyma-gateway.kyma-system.svc.cluster.local
+  rules:
+    - path: /.*
+      methods:
+        - GET
+      accessStrategies:
+        - handler: allow
+  host: bench
+  service:
+    name: bench
+    port: 3000
