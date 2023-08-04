@@ -76,7 +76,9 @@ app.get('/generate-files', (req, res) => {
   const endTime = process.hrtime(startTime);
   const executionTime = (endTime[0] + endTime[1] / 1e9).toFixed(3);
 
-  res.json({ message: `${numberOfFiles} files generated successfully in ${executionTime} seconds.` });
+  res.json({ message: `${numberOfFiles} files generated successfully in ${executionTime} seconds.`,
+  dataRoot: process.env.DATA_ROOT,
+  outputDir: outputDir });
 });
 
 // Route to list the files

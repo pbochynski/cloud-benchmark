@@ -1,31 +1,14 @@
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
+apiVersion: v1
+kind: PersistentVolumeClaim
 metadata:
-  name: rook-cephfs
-# Change "rook-ceph" provisioner prefix to match the operator namespace if needed
-provisioner: rook-ceph.cephfs.csi.ceph.com
-parameters:
-  # clusterID is the namespace where the rook cluster is running
-  # If you change this namespace, also change the namespace below where the secret namespaces are defined
-  clusterID: rook-ceph
-
-  # CephFS filesystem name into which the volume shall be created
-  fsName: myfs
-
-  # Ceph pool into which the volume shall be created
-  # Required for provisionVolume: "true"
-  pool: myfs-replicated
-
-  # The secrets contain Ceph admin credentials. These are generated automatically by the operator
-  # in the same namespace as the cluster.
-  csi.storage.k8s.io/provisioner-secret-name: rook-csi-cephfs-provisioner
-  csi.storage.k8s.io/provisioner-secret-namespace: rook-ceph
-  csi.storage.k8s.io/controller-expand-secret-name: rook-csi-cephfs-provisioner
-  csi.storage.k8s.io/controller-expand-secret-namespace: rook-ceph
-  csi.storage.k8s.io/node-stage-secret-name: rook-csi-cephfs-node
-  csi.storage.k8s.io/node-stage-secret-namespace: rook-ceph
-
-reclaimPolicy: Delete
+  name: cephfs-pvc
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: rook-cephfs
 ---
 kind: Deployment
 apiVersion: apps/v1
@@ -54,10 +37,10 @@ spec:
             memory: 200M
         env:
         - name: DATA_FOLDER
-          value: /data/shared
+          value: /data
         volumeMounts:
         - name: shared-fs
-          mountPath: /data/shared
+          mountPath: /data
       volumes:
       - name: shared-fs
         persistentVolumeClaim:
