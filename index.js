@@ -7,7 +7,8 @@ const crypto = require('crypto');
 const app = express();
 const numberOfFiles = 3000;
 const contentLength = 20 * 1024; // 20kB in bytes
-const outputDir = path.join(__dirname, 'output');
+const root_folder = process.env.DATA_ROOT || __dirname
+const outputDir = path.join(root_folder, 'output');
 
 const homePage = `<html>
 <body>
