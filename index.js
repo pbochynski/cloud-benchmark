@@ -59,10 +59,10 @@ const getRandomContent = (length) => {
   return crypto.randomBytes(length).toString('hex');
 };
 
-const writeFiles = () => {
+const writeFiles = (prefix) => {
   for (let i = 1; i <= numberOfFiles; i++) {
     const content = getRandomContent(contentLength);
-    const fileName = `file_${i}.txt`;
+    const fileName = `${prefix}_${i}.txt`;
     const filePath = path.join(outputDir, fileName);
 
     fs.writeFileSync(filePath, content);
@@ -72,7 +72,7 @@ const writeFiles = () => {
 // Route to generate the files
 app.get('/generate-files', (req, res) => {
   const startTime = process.hrtime();
-  writeFiles();
+  writeFiles(req.query.prefix || 'file');
   const endTime = process.hrtime(startTime);
   const executionTime = (endTime[0] + endTime[1] / 1e9).toFixed(3);
 
