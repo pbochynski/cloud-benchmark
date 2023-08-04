@@ -1,7 +1,14 @@
 const axios = require('axios');
 const express = require('express');
+const fs = require('fs');
+const path = require('path');
+const crypto = require('crypto');
 
 const app = express();
+const numberOfFiles = 3000;
+const contentLength = 20 * 1024; // 20kB in bytes
+const outputDir = path.join(__dirname, 'output');
+
 const homePage = `<html>
 <body>
   <h1>Cloud Benchmark</h1>
@@ -9,11 +16,19 @@ const homePage = `<html>
   <ul>
     <li><a href="/prime/2000000000">/prime/2000000000</a> - calculates the first prime number greater than 2000000000 (you can change the number)</li>
     <li><a href="/recursive/12">/recursive/12</a> - calculates the fibonacci sequence with recursive inefficient algorithm</li>
+    <li><a href="/generate-files">/generate-files</a> - generates 3000 text files of size 20KB each</li>
+    <li><a href="/list-files">/list-files</a> - lists generated files</li>
+    <li><a href="/file-content/file_1.txt">/file-content/{filename}</a> - retrieve file content</li>
   </ul>
 
   
 </body>
 </html>`
+
+// Create the output directory if it doesn't exist
+if (!fs.existsSync(outputDir)) {
+  fs.mkdirSync(outputDir);
+}
 
 function prime(n) {
   function isPrime(n) {
@@ -38,6 +53,55 @@ function fibIterative(n) {
   }
   return sequence[n];
 }
+
+const getRandomContent = (length) => {
+  return crypto.randomBytes(length).toString('hex');
+};
+
+const writeFiles = () => {
+  for (let i = 1; i <= numberOfFiles; i++) {
+    const content = getRandomContent(contentLength);
+    const fileName = `file_${i}.txt`;
+    const filePath = path.join(outputDir, fileName);
+
+    fs.writeFileSync(filePath, content);
+  }
+};
+
+// Route to generate the files
+app.get('/generate-files', (req, res) => {
+  const startTime = process.hrtime();
+  writeFiles();
+  const endTime = process.hrtime(startTime);
+  const executionTime = (endTime[0] + endTime[1] / 1e9).toFixed(3);
+
+  res.json({ message: `${numberOfFiles} files generated successfully in ${executionTime} seconds.` });
+});
+
+// Route to list the files
+app.get('/list-files', (req, res) => {
+  fs.readdir(outputDir, (err, files) => {
+    if (err) {
+      res.status(500).json({ error: 'Error listing files.' });
+    } else {
+      res.json({ files });
+    }
+  });
+});
+
+// Route to get file content
+app.get('/file-content/:filename', (req, res) => {
+  const fileName = req.params.filename;
+  const filePath = path.join(outputDir, fileName);
+
+  fs.readFile(filePath, 'utf8', (err, content) => {
+    if (err) {
+      res.status(404).json({ error: 'File not found.' });
+    } else {
+      res.send(content);
+    }
+  });
+});
 
 app.get('/fibonacci/:n', (req, res) => {
   const t1 = Date.now()
