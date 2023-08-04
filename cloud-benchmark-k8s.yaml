@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: cloud-benchmark
-          image: ghcr.io/pbochynski/cloud-benchmark:0.0.5
+          image: ghcr.io/pbochynski/cloud-benchmark:latest
           resources:
             limits:
               memory: 400M
