@@ -3,6 +3,7 @@
 The `cloud-benchmark` is a test application for checking the cloud offering performance. When you deploy the application to the target environment you can test:
 - CPU speed
 - network latency
+- filesystem throughput
 
 # Quick start
 
