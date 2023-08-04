@@ -28,7 +28,7 @@ spec:
     spec:
       containers:
       - name: cloud-benchmark
-        image: ghcr.io/pbochynski/cloud-benchmark:main
+        image: ghcr.io/pbochynski/cloud-benchmark:0.0.6
         resources:
           limits:
             memory: 400M
@@ -36,7 +36,7 @@ spec:
             cpu: 1000m
             memory: 200M
         env:
-        - name: DATA_FOLDER
+        - name: DATA_ROOT
           value: /data
         volumeMounts:
         - name: shared-fs
