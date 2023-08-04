@@ -64,7 +64,11 @@ const writeFiles = (prefix) => {
     const content = getRandomContent(contentLength);
     const fileName = `${prefix}_${i}.txt`;
     const filePath = path.join(outputDir, fileName);
-    fs.unlinkSync(filePath); // delete first
+    try{
+      fs.unlinkSync(filePath); // delete first
+    } catch (e) {
+      // catch not found exception
+    }
     fs.writeFileSync(filePath, content);
   }
 };
