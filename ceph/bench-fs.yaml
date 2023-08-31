@@ -63,21 +63,21 @@ spec:
     app: bench
   type: ClusterIP
 ---
-apiVersion: gateway.kyma-project.io/v1beta1
-kind: APIRule
-metadata:
-  name: bench
-  labels:
-    app.kubernetes.io/name: bench
-spec:
-  gateway: kyma-gateway.kyma-system.svc.cluster.local
-  rules:
-    - path: /.*
-      methods:
-        - GET
-      accessStrategies:
-        - handler: allow
-  host: bench
-  service:
-    name: bench
-    port: 3000
+# apiVersion: gateway.kyma-project.io/v1beta1
+# kind: APIRule
+# metadata:
+#   name: bench
+#   labels:
+#     app.kubernetes.io/name: bench
+# spec:
+#   gateway: kyma-gateway.kyma-system.svc.cluster.local
+#   rules:
+#     - path: /.*
+#       methods:
+#         - GET
+#       accessStrategies:
+#         - handler: allow
+#   host: bench
+#   service:
+#     name: bench
+#     port: 3000
