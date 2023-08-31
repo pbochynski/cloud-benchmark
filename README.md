@@ -29,6 +29,36 @@ kubectl label ns test istio-injection=enabled
 kubectl apply -n test -f https://raw.githubusercontent.com/pbochynski/cloud-benchmark/main/cloud-benchmark-k8s.yaml
 ```
 
+### Deploy Rook operator for Ceph FS for filesystem benchmark
+
+Install Rook operator:
+```
+kubectl apply -f ceph/crds.yaml -f ceph/common.yaml -f ceph/operator.yaml
+```
+
+Production cluster (3 nodes):
+```
+kubectl apply -f ceph/cluster-on-pvc.yaml
+```
+
+Create filesystem and storage class:
+```
+kubectl apply -f ceph/filesystem.yaml -f ceph/storageclass.yaml
+```
+
+Deploy cloud-benchmark app:
+```
+kubectl apply -f ceph/bench-fs.yaml
+```
+
+Open port to benchmark service:
+```
+kubectl port-forward services/bench 3000:3000
+```
+Now you can connect to the benchmark app:
+[http://localhost:3000](http://localhost:3000)
+
+
 # Benchmarks
 
 ## CPU
@@ -61,3 +91,7 @@ Sample execution times in milliseconds for different platforms:
 | 14 | 15074 |  8150 | 1657 | 522 |
 
 The latency is calculated on the server side, to not influence the results with the distance between the client and the application. 
+
+
+## Filesystem check
+
