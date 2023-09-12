@@ -1,32 +1,11 @@
 # This document will describe how to install velero in a kyma cluster to backup ceph volumes to AWS S3 (or BTP Object Storage)
 
-create or have an S3 Buck
+## Prerequisites
 
+- You need an AWS (or compatible) S3 Bucket
+- You need a ready-to-use k8s or kyma cluster
 
-create a credentials file:
-```
-cat > credentials-velero <<EOF
-[default]
-aws_access_key_id=<AWS_ACCESS_KEY_ID>
-aws_secret_access_key=<AWS_SECRET_ACCESS_KEY>
-EOF
-```
-
-Install Velero in the cluster
-```
-BUCKET=<YOUR_BUCKET>
-REGION=<YOUR_REGION>
-velero install \
-    --provider aws \
-    --features=EnableCSI \
-    --use-node-agent \
-    --plugins velero/velero-plugin-for-aws:v1.7.1,velero/velero-plugin-for-csi:v0.3.0 \
-    --bucket $BUCKET \
-    --backup-location-config region=$REGION \
-    --snapshot-location-config region=$REGION \
-    --secret-file ./credentials-velero
-```
-
+## Create an AWS User with the following IAM Policy attached_
 Example IAM Policy for S3 Storage Account: 
 ```
 cat > velero-policy.json <<EOF
@@ -69,6 +48,45 @@ cat > velero-policy.json <<EOF
         }
     ]
 }
+EOF
+```
+## Install the Velero Client
+This can be done with brew on Mac:
+```
+brew install velero
+```
+Or download it from the repo and unpack it for Linux:
+Download the latest release’s tarball for your client platform: https://github.com/vmware-tanzu/velero/releases/latest
+
+Extract the tarball:
+```
+tar -xvf <RELEASE-TARBALL-NAME>.tar.gz
+```
+Move the extracted velero binary to somewhere in your $PATH (/usr/local/bin for most users).
+
+
+## Install Velero in the Cluster
+Install Velero in the cluster
+```
+BUCKET=<YOUR_BUCKET>
+REGION=<YOUR_REGION>
+velero install \
+    --provider aws \
+    --features=EnableCSI \
+    --use-node-agent \
+    --plugins velero/velero-plugin-for-aws:v1.7.1,velero/velero-plugin-for-csi:v0.3.0 \
+    --bucket $BUCKET \
+    --backup-location-config region=$REGION \
+    --snapshot-location-config region=$REGION \
+    --secret-file ./credentials-velero
+```
+
+Create a credentials file:
+```
+cat > credentials-velero <<EOF
+[default]
+aws_access_key_id=<AWS_ACCESS_KEY_ID>
+aws_secret_access_key=<AWS_SECRET_ACCESS_KEY>
 EOF
 ```
 
