@@ -17,7 +17,7 @@ const homePage = `<html>
   <ul>
     <li><a href="/prime/2000000000">/prime/2000000000</a> - calculates the first prime number greater than 2000000000 (you can change the number)</li>
     <li><a href="/recursive/12">/recursive/12</a> - calculates the fibonacci sequence with recursive inefficient algorithm</li>
-    <li><a href="/generate-files">/generate-files</a> - generates 3000 text files of size 20KB each</li>
+    <li><a href="/generate-files?prefix=a&n=3000&size=20000&deleteFirst=false">/generate-files</a> - generates 3000 text files of size 20KB each</li>
     <li><a href="/list-files">/list-files</a> - lists generated files</li>
     <li><a href="/file-content/file_1.txt">/file-content/{filename}</a> - retrieve file content</li>
   </ul>
