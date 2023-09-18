@@ -12,7 +12,7 @@ const outputDir = path.join(root_folder, 'output');
 
 const homePage = `<html>
 <body>
-  <h1>Cloud Benchmark</h1>
+  <h1>Cloud Benchmark 0.0.12</h1>
   The simple application to verify CPU speed, network latency, and filesystem throughput of your application runtime.
   <ul>
     <li><a href="/prime/2000000000">/prime/2000000000</a> - calculates the first prime number greater than 2000000000 (you can change the number)</li>
@@ -58,9 +58,15 @@ function fibIterative(n) {
 const getRandomContent = (length) => {
   return crypto.randomBytes(length).toString('hex');
 };
-
-
-const writeFiles = (options) => {
+function waitForFinish(stream) {
+  new Promise((resolve,reject)=>{
+    stream.on('finish',()=>{
+      resolve()
+    })
+    stream.end()
+  })
+}
+async function writeFiles(options) {
   const CHUNK=1024*1024
   for (let i = 1; i <= options.n; i++) {
     const content = getRandomContent(options.size);
@@ -75,9 +81,6 @@ const writeFiles = (options) => {
     }
     let writeStream = fs.createWriteStream(filePath)
 
-    writeStream.on("finish", ()=>{
-      console.log("Write finished at ",new Date() )
-    })
     let size = options.size 
     while (size>0) {
       if (size<CHUNK) {
@@ -89,8 +92,9 @@ const writeFiles = (options) => {
 
       }
     }
-    writeStream.end()
-    console.log("Write ended at ",new Date() )
+    console.log("Finishing writes... ",new Date() )
+    await waitForFinish(writeStream)
+    console.log("Write finished at ",new Date() )
 
   }
 };
@@ -117,10 +121,10 @@ function getOptions(query) {
   return options
 }
 // Route to generate the files
-app.get('/generate-files', (req, res) => {
+app.get('/generate-files', async (req, res) => {
   const startTime = process.hrtime();
   let options=getOptions(req.query)
-  writeFiles(options);
+  await writeFiles(options);
   const endTime = process.hrtime(startTime);
   const executionTime = (endTime[0] + endTime[1] / 1e9);
   const filesPerSecond = options.n/executionTime
