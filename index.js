@@ -55,21 +55,44 @@ function fibIterative(n) {
   return sequence[n];
 }
 
-const getRandomContent = (length) => {
-  return crypto.randomBytes(length).toString('hex');
-};
-function waitForFinish(stream) {
-  new Promise((resolve,reject)=>{
-    stream.on('finish',()=>{
-      resolve()
+
+function pipeAndWait(input, output){
+  return new Promise((resolve,reject)=>{
+    input.pipe(output)
+    output.on('finish',(error)=>{
+
+      console.log("Finish happened", error)
+      resolve(error)
     })
-    stream.end()
   })
 }
+const { Readable } = require('stream');
+
+class RandomCharacterStream extends Readable {
+  constructor(options = {}) {
+    super(options);
+    this.characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    this.count = options.count || 1000; // Number of random characters to generate
+  }
+
+  _read(size) {
+    let data = '';
+    for (let i = 0; i < size && i<this.count; i++) {
+      const randomIndex = Math.floor(Math.random() * this.characters.length);
+      data += this.characters.charAt(randomIndex);
+    }
+    this.push(data);
+    this.count -= size;
+    if (this.count <= 0) {
+      this.push(null); // No more data to push
+      console.log("Stream drained")
+    }
+  }
+}
+
 async function writeFiles(options) {
-  const CHUNK=1024*1024
+  
   for (let i = 1; i <= options.n; i++) {
-    const content = getRandomContent(options.size);
     const fileName = `${options.prefix}_${i}.txt`;
     const filePath = path.join(outputDir, fileName);
     if (options.deleteFirst) {
@@ -79,23 +102,13 @@ async function writeFiles(options) {
         // catch not found exception
       }  
     }
+    
     let writeStream = fs.createWriteStream(filePath)
+    let randomCharacterStream = new RandomCharacterStream({ count: options.size });
 
-    let size = options.size 
-    while (size>0) {
-      if (size<CHUNK) {
-        size=0
-        writeStream.write(getRandomContent(size))
-      } else {
-        size-=CHUNK
-        writeStream.write(getRandomContent(CHUNK))
-
-      }
-    }
     console.log("Finishing writes... ",new Date() )
-    await waitForFinish(writeStream)
-    console.log("Write finished at ",new Date() )
-
+    await pipeAndWait(randomCharacterStream,writeStream)
+    console.log("Write finished at %s",new Date())
   }
 };
 
@@ -113,7 +126,7 @@ function getOptions(query) {
     options.deleteFirst = query.deleteFirst
   }
   if (query.size) {
-    options.size = Math.floor(Number(query.size)/2)
+    options.size = Math.floor(Number(query.size))
   }
   if (query.n) {
     options.n = Math.floor(Number(query.n))
