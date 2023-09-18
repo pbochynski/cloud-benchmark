@@ -59,28 +59,57 @@ const getRandomContent = (length) => {
   return crypto.randomBytes(length).toString('hex');
 };
 
-const writeFiles = (prefix) => {
-  for (let i = 1; i <= numberOfFiles; i++) {
-    const content = getRandomContent(contentLength);
-    const fileName = `${prefix}_${i}.txt`;
+
+const writeFiles = (options) => {
+  for (let i = 1; i <= options.n; i++) {
+    const content = getRandomContent(options.size);
+    const fileName = `${options.prefix}_${i}.txt`;
     const filePath = path.join(outputDir, fileName);
-    try{
-      fs.unlinkSync(filePath); // delete first
-    } catch (e) {
-      // catch not found exception
+    if (options.deleteFirst) {
+      try{
+        fs.unlinkSync(filePath); // delete first
+      } catch (e) {
+        // catch not found exception
+      }  
     }
     fs.writeFileSync(filePath, content);
   }
 };
 
+function getOptions(query) {
+  let options = {
+    prefix: 'file',
+    deleteFirst: false,
+    size: 10000,
+    n: 3000
+  }
+  if (query.prefix) {
+    options.prefix = query.prefix
+  }
+  if (query.deleteFirst) {
+    options.deleteFirst = query.deleteFirst
+  }
+  if (query.size) {
+    options.size = Math.floor(Number(query.size)/2)
+  }
+  if (query.n) {
+    options.n = Math.floor(Number(query.n))
+  }
+  return options
+}
 // Route to generate the files
 app.get('/generate-files', (req, res) => {
   const startTime = process.hrtime();
-  writeFiles(req.query.prefix || 'file');
+  let options=getOptions(req.query)
+  writeFiles(options);
   const endTime = process.hrtime(startTime);
-  const executionTime = (endTime[0] + endTime[1] / 1e9).toFixed(3);
+  const executionTime = (endTime[0] + endTime[1] / 1e9);
+  const filesPerSecond = options.n/executionTime
+  const MBPerSecond = options.n*options.size/(1024*1024*executionTime)
 
-  res.json({ message: `${numberOfFiles} files generated successfully in ${executionTime} seconds.`,
+  res.json({ message: `${options.n} files generated successfully in ${executionTime.toFixed(3)} seconds`,
+  filesPerSecond,
+  MBPerSecond,
   dataRoot: process.env.DATA_ROOT,
   outputDir: outputDir });
 });
