@@ -17,7 +17,7 @@ const homePage = `<html>
   <ul>
     <li><a href="/prime/2000000000">/prime/2000000000</a> - calculates the first prime number greater than 2000000000 (you can change the number)</li>
     <li><a href="/recursive/12">/recursive/12</a> - calculates the fibonacci sequence with recursive inefficient algorithm</li>
-    <li><a href="/generate-files?prefix=a&n=3000&size=20000&deleteFirst=false">/generate-files</a> - generates 3000 text files of size 20KB each</li>
+    <li><a href="/generate-files?prefix=a&n=3000&size=20000&deleteFirst=false">/generate-files?prefix=a&n=3000&size=20000&deleteFirst=false</a> - generates 3000 text files of size 20KB each</li>
     <li><a href="/list-files">/list-files</a> - lists generated files</li>
     <li><a href="/file-content/file_1.txt">/file-content/{filename}</a> - retrieve file content</li>
   </ul>
@@ -61,6 +61,7 @@ const getRandomContent = (length) => {
 
 
 const writeFiles = (options) => {
+  const CHUNK=1024*1024
   for (let i = 1; i <= options.n; i++) {
     const content = getRandomContent(options.size);
     const fileName = `${options.prefix}_${i}.txt`;
@@ -72,7 +73,25 @@ const writeFiles = (options) => {
         // catch not found exception
       }  
     }
-    fs.writeFileSync(filePath, content);
+    let writeStream = fs.createWriteStream(filePath)
+
+    writeStream.on("finish", ()=>{
+      console.log("Write finished at ",new Date() )
+    })
+    let size = options.size 
+    while (size>0) {
+      if (size<CHUNK) {
+        size=0
+        writeStream.write(getRandomContent(size))
+      } else {
+        size-=CHUNK
+        writeStream.write(getRandomContent(CHUNK))
+
+      }
+    }
+    writeStream.end()
+    console.log("Write ended at ",new Date() )
+
   }
 };
 
