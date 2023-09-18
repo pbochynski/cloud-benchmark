@@ -12,7 +12,7 @@ const outputDir = path.join(root_folder, 'output');
 
 const homePage = `<html>
 <body>
-  <h1>Cloud Benchmark 0.0.12</h1>
+  <h1>Cloud Benchmark 0.0.13</h1>
   The simple application to verify CPU speed, network latency, and filesystem throughput of your application runtime.
   <ul>
     <li><a href="/prime/2000000000">/prime/2000000000</a> - calculates the first prime number greater than 2000000000 (you can change the number)</li>
