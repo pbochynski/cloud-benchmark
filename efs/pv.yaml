@@ -12,7 +12,7 @@ spec:
   storageClassName: efs-sc
   csi:
     driver: efs.csi.aws.com
-    volumeHandle: fs-00fab48f4421fb1dc
+    volumeHandle: fs-00fab48f4421fb1dc # <--- put your EFS filesystem ID here
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

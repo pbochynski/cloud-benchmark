@@ -1,18 +1,18 @@
 kind: Deployment
 apiVersion: apps/v1
 metadata:
-  name: bench
+  name: bench-efs
   labels:
-    app: bench
+    app: bench-efs
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: bench
+      app: bench-efs
   template:
     metadata:
       labels:
-        app: bench
+        app: bench-efs
     spec:
       containers:
       - name: cloud-benchmark
@@ -35,9 +35,9 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  name: bench
+  name: bench-efs
   labels:
-    app: bench
+    app: bench-efs
 spec:
   ports:
     - name: http
@@ -45,5 +45,5 @@ spec:
       port: 3000
       targetPort: 3000
   selector:
-    app: bench
+    app: bench-efs
   type: ClusterIP

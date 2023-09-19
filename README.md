@@ -77,11 +77,11 @@ Now you can connect to the benchmark app:
    ```
 6. Deploy benchmark application:
    ```
-   kubectl apply -f efs/bench-fs.yaml
+   kubectl apply -f efs/bench-efs.yaml
    ```
 7. Port forward benchmark application to localhost:3000
    ```
-   kubectl port-forward services/bench 3000:3000
+   kubectl port-forward services/bench-efs 3000:3000
    ```
    and connect to the benchmark app: [http://localhost:3000](http://localhost:3000)
 
@@ -119,6 +119,44 @@ Sample execution times in milliseconds for different platforms:
 
 The latency is calculated on the server side, to not influence the results with the distance between the client and the application. 
 
-
 ## Filesystem check
+
+`GET /generate-files?prefix=a&n=3000&size=20000&deleteFirst=false"` - generates 3000 files with random content. The files are located in `output` folder and named `{prefix}_{number}.txt`. With the `deleteFirst` flag enabled the generator tries to delete the file first before it writes to it.
+
+
+The test script for small files:
+```
+curl "http://localhost:3000/generate-files?prefix=s&n=3000&size=20000"
+curl "http://localhost:3000/generate-files?prefix=s&n=3000&size=20000"
+curl "http://localhost:3000/generate-files?prefix=s&n=3000&size=20000&deleteFirst=true"
+
+```
+
+The test script for medium files:
+```
+curl "http://localhost:3000/generate-files?prefix=m&n=300&size=2000000"
+curl "http://localhost:3000/generate-files?prefix=m&n=300&size=2000000"
+curl "http://localhost:3000/generate-files?prefix=m&n=300&size=2000000&deleteFirst=true"
+```
+
+The test script for large files:
+```
+curl "http://localhost:3000/generate-files?prefix=l&n=2&size=300000000"
+curl "http://localhost:3000/generate-files?prefix=l&n=2&size=300000000"
+curl "http://localhost:3000/generate-files?prefix=l&n=2&size=300000000&deleteFirst=true"
+```
+
+### Sample results for Ceph FS and EFS storage
+
+| Test | Cephs FS | EFS |
+|------|----------|-----|
+|3000 small files (20KB) - new file | 4s | 22s |
+|3000 small files (20KB) - overwrite existing | 37s | 41s |
+|3000 small files (20KB) - delete and create new file | 7s | 36s |
+|300 medium files (2MB) - new file | 24s | 27s |
+|300 medium files (2MB) - overwrite existing | 27s | 30s |
+|300 medium files (2MB) - delete and create new file | 24s | 27s |
+|2 large files (300MB) - new file | (crash) | 45s |
+|2 large files (300MB) - overwrite existing | (crash) | 47s |
+|2 large files (300MB) - delete and create new file |(crash) | 43s |
 
