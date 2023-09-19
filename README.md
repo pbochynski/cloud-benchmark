@@ -141,9 +141,9 @@ curl "http://localhost:3000/generate-files?prefix=m&n=300&size=2000000&deleteFir
 
 The test script for large files:
 ```
-curl "http://localhost:3000/generate-files?prefix=l&n=2&size=300000000"
-curl "http://localhost:3000/generate-files?prefix=l&n=2&size=300000000"
-curl "http://localhost:3000/generate-files?prefix=l&n=2&size=300000000&deleteFirst=true"
+curl "http://localhost:3000/generate-files?prefix=l&n=6&size=100000000"
+curl "http://localhost:3000/generate-files?prefix=l&n=6&size=100000000"
+curl "http://localhost:3000/generate-files?prefix=l&n=6&size=100000000&deleteFirst=true"
 ```
 
 ### Sample results for Ceph FS and EFS storage
@@ -156,7 +156,7 @@ curl "http://localhost:3000/generate-files?prefix=l&n=2&size=300000000&deleteFir
 |300 medium files (2MB) - new file | 24s | 27s |
 |300 medium files (2MB) - overwrite existing | 27s | 30s |
 |300 medium files (2MB) - delete and create new file | 24s | 27s |
-|2 large files (300MB) - new file | (crash) | 45s |
-|2 large files (300MB) - overwrite existing | (crash) | 47s |
-|2 large files (300MB) - delete and create new file |(crash) | 43s |
+|6 large files (100MB) - new file | 24s | 24s |
+|6 large files (300MB) - overwrite existing | 24s | 24s  |
+|6 large files (300MB) - delete and create new file | 24s | 25s |
 
