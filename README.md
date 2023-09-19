@@ -58,6 +58,33 @@ kubectl port-forward services/bench 3000:3000
 Now you can connect to the benchmark app:
 [http://localhost:3000](http://localhost:3000)
 
+### AWS EFS 
+1. Create Gardener cluster in AWS region
+2. Create Filesystem in the same region in AWS Console.
+   - pick shoot VPC (the one created by Gardener)
+   - go to Network section of new filesystem and wait until mount target state become Available and enter edit mode. Add shoot cluster security group and Save
+3. Install EFS CSI driver:
+   ```
+   kubectl apply -k "github.com/kubernetes-sigs/aws-efs-csi-driver/deploy/kubernetes/overlays/stable/?ref=release-1.5"
+   ```
+4. Create storage class for EFS:
+   ```
+   kubectl apply -f efs/storageclass.yaml
+   ```
+5. Edit `pv.yaml` and replace `volumeHandle` with the filesystem id. Create persistent volume and persistent volume claim:
+   ```
+   kubectl apply -f efs/pv.yaml
+   ```
+6. Deploy benchmark application:
+   ```
+   kubectl apply -f efs/bench-fs.yaml
+   ```
+7. Port forward benchmark application to localhost:3000
+   ```
+   kubectl port-forward services/bench 3000:3000
+   ```
+   and connect to the benchmark app: [http://localhost:3000](http://localhost:3000)
+
 
 # Benchmarks
 
