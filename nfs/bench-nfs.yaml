@@ -1,0 +1,49 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: bench-nfs
+  labels:
+    app: bench-nfs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bench-nfs
+  template:
+    metadata:
+      labels:
+        app: bench-nfs
+    spec:
+      containers:
+      - name: cloud-benchmark
+        image: ghcr.io/pbochynski/cloud-benchmark:latest
+        resources:
+          limits:
+            memory: 400M
+        env:
+        - name: DATA_ROOT
+          value: /data
+        volumeMounts:
+        - name: shared-fs
+          mountPath: /data
+      volumes:
+      - name: shared-fs
+        persistentVolumeClaim:
+          claimName: pvc-nfs-static
+          readOnly: false
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: bench-nfs
+  labels:
+    app: bench-nfs
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
+  selector:
+    app: bench-nfs
+  type: ClusterIP
