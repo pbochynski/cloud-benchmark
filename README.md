@@ -173,7 +173,7 @@ curl "http://localhost:3000/generate-files?prefix=l&n=6&size=100000000&deleteFir
 
 | Test | Cephs FS | EFS | NFS (Filestore HDD) | NFS (Filestore SSD) |
 |------|----------|-----|---------------------|---------------------|
-|3000 small files (20KB) - new file | 4s | 22s | 12s | 872s |
+|3000 small files (20KB) - new file | 4s | 22s | 12s |  |
 |3000 small files (20KB) - overwrite existing | 37s | 41s | 15s |  |
 |3000 small files (20KB) - delete and create new file | 7s | 36s | 24s | | 
 |300 medium files (2MB) - new file | 24s | 27s | 34s | |
