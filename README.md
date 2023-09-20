@@ -85,6 +85,30 @@ Now you can connect to the benchmark app:
    ```
    and connect to the benchmark app: [http://localhost:3000](http://localhost:3000)
 
+### CSI driver NFS 
+
+1. Create Gardener cluster in GCP region
+2. Install CSI NFS driver:
+   ```
+   kubectl apply -f nfs/rbac-csi-nfs.yaml
+   kubectl apply -f nfs/csi-nfs-driverinfo.yaml
+   kubectl apply -f nfs/csi-nfs-controller.yaml
+   kubectl apply -f nfs/csi-nfs-node.yaml
+   ```
+3. Create Filestore instance in [console.cloud.google.com](https://console.cloud.google.com)
+4. Edit [nfs/storageclass.yaml](nfs/storageclass.yaml) and [nfs/pvc.yaml](nfs/pvc.yaml) and paste NFS server IP and share name
+5. Deploy PVC and application:
+   ```
+   kubectl apply -f nfs/storageclass.yaml
+   kubectl apply -f nfs/pvc.yaml
+   kubectl apply -f nfs/bench-nfs.yaml
+   ```
+6. Port forward benchmark application to localhost:3000
+   ```
+   kubectl port-forward services/bench-efs 3000:3000
+   ```
+   and connect to the benchmark app: [http://localhost:3000](http://localhost:3000)
+
 
 # Benchmarks
 
@@ -129,7 +153,6 @@ The test script for small files:
 curl "http://localhost:3000/generate-files?prefix=s&n=3000&size=20000"
 curl "http://localhost:3000/generate-files?prefix=s&n=3000&size=20000"
 curl "http://localhost:3000/generate-files?prefix=s&n=3000&size=20000&deleteFirst=true"
-
 ```
 
 The test script for medium files:
@@ -148,15 +171,15 @@ curl "http://localhost:3000/generate-files?prefix=l&n=6&size=100000000&deleteFir
 
 ### Sample results for Ceph FS and EFS storage
 
-| Test | Cephs FS | EFS |
-|------|----------|-----|
-|3000 small files (20KB) - new file | 4s | 22s |
-|3000 small files (20KB) - overwrite existing | 37s | 41s |
-|3000 small files (20KB) - delete and create new file | 7s | 36s |
-|300 medium files (2MB) - new file | 24s | 27s |
-|300 medium files (2MB) - overwrite existing | 27s | 30s |
-|300 medium files (2MB) - delete and create new file | 24s | 27s |
-|6 large files (100MB) - new file | 24s | 24s |
-|6 large files (300MB) - overwrite existing | 24s | 24s  |
-|6 large files (300MB) - delete and create new file | 24s | 25s |
+| Test | Cephs FS | EFS | NFS (Filestore HDD) | NFS (Filestore SSD) |
+|------|----------|-----|---------------------|---------------------|
+|3000 small files (20KB) - new file | 4s | 22s | 12s | 872s |
+|3000 small files (20KB) - overwrite existing | 37s | 41s | 15s |  |
+|3000 small files (20KB) - delete and create new file | 7s | 36s | 24s | | 
+|300 medium files (2MB) - new file | 24s | 27s | 34s | |
+|300 medium files (2MB) - overwrite existing | 27s | 30s | 37s |  |
+|300 medium files (2MB) - delete and create new file | 24s | 27s | 38s | |
+|6 large files (100MB) - new file | 24s | 24s | 34s | |
+|6 large files (300MB) - overwrite existing | 24s | 24s  | 34s | |
+|6 large files (300MB) - delete and create new file | 24s | 25s | 34s | |
 
