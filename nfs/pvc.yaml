@@ -19,10 +19,10 @@ spec:
     readOnly: false
     # volumeHandle format: {nfs-server-address}#{sub-dir-name}#{share-name}
     # make sure this value is unique for every share in the cluster
-    volumeHandle: 10.2.171.202#sdd#pvc1##
+    volumeHandle: 10.17.65.170#ssd#pvc1##
     volumeAttributes:
-      server: 10.2.171.202
-      share: /sdd
+      server: 10.17.65.170
+      share: /ssd
 
 ---
 kind: PersistentVolumeClaim
