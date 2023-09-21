@@ -171,15 +171,15 @@ curl "http://localhost:3000/generate-files?prefix=l&n=6&size=100000000&deleteFir
 
 ### Sample results for Ceph FS and EFS storage
 
-| Test | Cephs FS | EFS | NFS (Filestore HDD) | NFS (Filestore SSD) |
-|------|----------|-----|---------------------|---------------------|
-|3000 small files (20KB) - new file | 4s | 22s | 12s | 10s |
-|3000 small files (20KB) - overwrite existing | 37s | 41s | 15s | 12s |
-|3000 small files (20KB) - delete and create new file | 7s | 36s | 24s | 17s | 
-|300 medium files (2MB) - new file | 24s | 27s | 34s | 35s |
-|300 medium files (2MB) - overwrite existing | 27s | 30s | 37s | 35s |
-|300 medium files (2MB) - delete and create new file | 24s | 27s | 38s | 36s |
-|6 large files (100MB) - new file | 24s | 24s | 34s | 34s |
-|6 large files (300MB) - overwrite existing | 24s | 24s  | 34s | 34s |
-|6 large files (300MB) - delete and create new file | 24s | 25s | 34s | 34s |
+| Test | Cephs FS | EFS | NFS (Filestore HDD) | NFS (Filestore SSD) | Azure Files |
+|------|----------|-----|---------------------|---------------------|-------------|
+|3000 small files (20KB) - new file | 4s | 22s | 12s | 10s | 244s | 
+|3000 small files (20KB) - overwrite existing | 37s | 41s | 15s | 12s | 233s |
+|3000 small files (20KB) - delete and create new file | 7s | 36s | 24s | 17s | 304s | 
+|300 medium files (2MB) - new file | 24s | 27s | 34s | 35s | 60 s |
+|300 medium files (2MB) - overwrite existing | 27s | 30s | 37s | 35s | 62s |
+|300 medium files (2MB) - delete and create new file | 24s | 27s | 38s | 36s | 60s |
+|6 large files (100MB) - new file | 24s | 24s | 34s | 34s | 31s |
+|6 large files (300MB) - overwrite existing | 24s | 24s  | 34s | 34s | 31s |
+|6 large files (300MB) - delete and create new file | 24s | 25s | 34s | 34s | 35s |
 
