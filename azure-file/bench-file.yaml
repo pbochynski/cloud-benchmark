@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-file
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: files
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: bench-file
+  labels:
+    app: bench-file
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bench-file
+  template:
+    metadata:
+      labels:
+        app: bench-file
+    spec:
+      containers:
+      - name: cloud-benchmark
+        image: ghcr.io/pbochynski/cloud-benchmark:latest
+        resources:
+          limits:
+            memory: 400M
+        env:
+        - name: DATA_ROOT
+          value: /data
+        volumeMounts:
+        - name: shared-fs
+          mountPath: /data
+      volumes:
+      - name: shared-fs
+        persistentVolumeClaim:
+          claimName: pvc-file
+          readOnly: false
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: bench-file
+  labels:
+    app: bench-file
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
+  selector:
+    app: bench-file
+  type: ClusterIP
