@@ -65,7 +65,7 @@ Now you can connect to the benchmark app:
    - go to Network section of new filesystem and wait until mount target state become Available and enter edit mode. Add shoot cluster security group and Save
 3. Install EFS CSI driver:
    ```
-   kubectl apply -k "github.com/kubernetes-sigs/aws-efs-csi-driver/deploy/kubernetes/overlays/stable/?ref=release-1.5"
+   kubectl apply -k "github.com/kubernetes-sigs/aws-efs-csi-driver/deploy/kubernetes/overlays/stable/?ref=release-1.7"
    ```
 4. Edit storageclass.yaml and replace fileSystemId with the your id. Create storage class:
    ```
