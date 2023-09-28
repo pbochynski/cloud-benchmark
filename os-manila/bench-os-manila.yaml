@@ -1,0 +1,49 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: bench-os-manila
+  labels:
+    app: bench-os-manila
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bench-os-manila
+  template:
+    metadata:
+      labels:
+        app: bench-os-manila
+    spec:
+      containers:
+      - name: cloud-benchmark
+        image: ghcr.io/pbochynski/cloud-benchmark:latest
+        resources:
+          limits:
+            memory: 400M
+        env:
+        - name: DATA_ROOT
+          value: /data
+        volumeMounts:
+        - name: shared-fs
+          mountPath: /data
+      volumes:
+      - name: shared-fs
+        persistentVolumeClaim:
+          claimName: os-manila-claim
+          readOnly: false
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: bench-os-manila
+  labels:
+    app: bench-os-manila
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
+  selector:
+    app: bench-os-manila
+  type: ClusterIP

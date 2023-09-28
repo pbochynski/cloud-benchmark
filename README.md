@@ -109,6 +109,19 @@ Now you can connect to the benchmark app:
    ```
    and connect to the benchmark app: [http://localhost:3000](http://localhost:3000)
 
+### Openstack Manila (Converged Cloud)
+
+1. Create Gardener Cluster in CC Region. Ensure to set in your shoot: InfrastructureConfig.networks.shareNetwork.enabled=True and ControlPlaneConfig.storage.csiManila.enabled=True.
+2. Deploy PVC and application:
+   ```
+   kubectl apply -f os-manila/pvc.yaml
+   kubectl apply -f os-manila/bench-os-manila.yaml
+   ```
+6. Port forward benchmark application to localhost:3000
+   ```
+   kubectl port-forward services/bench-os-manila 3000:3000
+   ```
+   and connect to the benchmark app: [http://localhost:3000](http://localhost:3000)
 
 # Benchmarks
 
@@ -171,14 +184,14 @@ curl "http://localhost:3000/generate-files?prefix=l&n=6&size=100000000&deleteFir
 
 ### Sample results for Ceph FS and EFS storage
 
-| Test | Cephs FS | EFS | NFS (Filestore HDD) | NFS (Filestore SSD) | Azure Files |
-|------|----------|-----|---------------------|---------------------|-------------|
-|3000 small files (20KB) - new file | 4s | 22s | 12s | 10s | 244s | 
-|3000 small files (20KB) - overwrite existing | 37s | 41s | 15s | 12s | 233s |
-|3000 small files (20KB) - delete and create new file | 7s | 36s | 24s | 17s | 304s | 
-|300 medium files (2MB) - new file | 24s | 27s | 34s | 35s | 60 s |
-|300 medium files (2MB) - overwrite existing | 27s | 30s | 37s | 35s | 62s |
-|300 medium files (2MB) - delete and create new file | 24s | 27s | 38s | 36s | 60s |
+| Test | Cephs FS | EFS | NFS (Filestore HDD) | NFS (Filestore SSD) | Azure Files | OS Manila |
+|------|----------|-----|---------------------|---------------------|-------------|-----------|
+|3000 small files (20KB) - new file | 4s | 22s | 12s | 10s | 244s | 3s | 
+|3000 small files (20KB) - overwrite existing | 37s | 41s | 15s | 12s | 233s | 4s | 
+|3000 small files (20KB) - delete and create new file | 7s | 36s | 24s | 17s | 304s | 5s | 
+|300 medium files (2MB) - new file | 24s | 27s | 34s | 35s | 60 s | 24s | 
+|300 medium files (2MB) - overwrite existing | 27s | 30s | 37s | 35s | 62s | 27s | 
+|300 medium files (2MB) - delete and create new file | 24s | 27s | 38s | 36s | 60s | 26s | 
 |6 large files (100MB) - new file | 24s | 24s | 34s | 34s | 31s |
 |6 large files (300MB) - overwrite existing | 24s | 24s  | 34s | 34s | 31s |
 |6 large files (300MB) - delete and create new file | 24s | 25s | 34s | 34s | 35s |
