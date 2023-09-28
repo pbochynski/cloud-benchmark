@@ -67,15 +67,19 @@ Now you can connect to the benchmark app:
    ```
    kubectl apply -k "github.com/kubernetes-sigs/aws-efs-csi-driver/deploy/kubernetes/overlays/stable/?ref=release-1.7"
    ```
-4. Edit storageclass.yaml and replace fileSystemId with the your id. Create storage class:
+4. Create storage class:
    ```
    kubectl apply -f efs/storageclass.yaml
    ```
-5. Deploy benchmark application:
+5. Edit pv.yaml and replace fileSystemId with the your id. Create persisten volume:
+   ```
+   kubectl apply -f efs/pv.yaml
+   ```
+6. Deploy benchmark application:
    ```
    kubectl apply -f efs/bench-efs.yaml
    ```
-6. Port forward benchmark application to localhost:3000
+7. Port forward benchmark application to localhost:3000
    ```
    kubectl port-forward services/bench-efs 3000:3000
    ```
