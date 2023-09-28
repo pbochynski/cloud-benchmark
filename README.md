@@ -192,7 +192,7 @@ curl "http://localhost:3000/generate-files?prefix=l&n=6&size=100000000&deleteFir
 |300 medium files (2MB) - new file | 24s | 27s | 34s | 35s | 60 s | 24s | 
 |300 medium files (2MB) - overwrite existing | 27s | 30s | 37s | 35s | 62s | 27s | 
 |300 medium files (2MB) - delete and create new file | 24s | 27s | 38s | 36s | 60s | 26s | 
-|6 large files (100MB) - new file | 24s | 24s | 34s | 34s | 31s |
-|6 large files (300MB) - overwrite existing | 24s | 24s  | 34s | 34s | 31s |
-|6 large files (300MB) - delete and create new file | 24s | 25s | 34s | 34s | 35s |
+|6 large files (100MB) - new file | 24s | 24s | 34s | 34s | 31s | 21s | 
+|6 large files (300MB) - overwrite existing | 24s | 24s  | 34s | 34s | 31s | 21,2s | 
+|6 large files (300MB) - delete and create new file | 24s | 25s | 34s | 34s | 35s | 22s | 
 
