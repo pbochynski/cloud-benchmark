@@ -67,19 +67,15 @@ Now you can connect to the benchmark app:
    ```
    kubectl apply -k "github.com/kubernetes-sigs/aws-efs-csi-driver/deploy/kubernetes/overlays/stable/?ref=release-1.5"
    ```
-4. Create storage class for EFS:
+4. Edit storageclass.yaml and replace fileSystemId with the your id. Create storage class:
    ```
    kubectl apply -f efs/storageclass.yaml
    ```
-5. Edit `pv.yaml` and replace `volumeHandle` with the filesystem id. Create persistent volume and persistent volume claim:
-   ```
-   kubectl apply -f efs/pv.yaml
-   ```
-6. Deploy benchmark application:
+5. Deploy benchmark application:
    ```
    kubectl apply -f efs/bench-efs.yaml
    ```
-7. Port forward benchmark application to localhost:3000
+6. Port forward benchmark application to localhost:3000
    ```
    kubectl port-forward services/bench-efs 3000:3000
    ```
@@ -105,7 +101,7 @@ Now you can connect to the benchmark app:
    ```
 6. Port forward benchmark application to localhost:3000
    ```
-   kubectl port-forward services/bench-efs 3000:3000
+   kubectl port-forward services/bench-nfs 3000:3000
    ```
    and connect to the benchmark app: [http://localhost:3000](http://localhost:3000)
 
@@ -180,6 +176,6 @@ curl "http://localhost:3000/generate-files?prefix=l&n=6&size=100000000&deleteFir
 |300 medium files (2MB) - overwrite existing | 27s | 30s | 37s | 35s | 62s |
 |300 medium files (2MB) - delete and create new file | 24s | 27s | 38s | 36s | 60s |
 |6 large files (100MB) - new file | 24s | 24s | 34s | 34s | 31s |
-|6 large files (300MB) - overwrite existing | 24s | 24s  | 34s | 34s | 31s |
-|6 large files (300MB) - delete and create new file | 24s | 25s | 34s | 34s | 35s |
+|6 large files (100MB) - overwrite existing | 24s | 24s  | 34s | 34s | 31s |
+|6 large files (100MB) - delete and create new file | 24s | 25s | 34s | 34s | 35s |
 
